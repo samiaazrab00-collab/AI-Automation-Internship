@@ -1,0 +1,124 @@
+{
+  "name": "Client Onboarding",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "dataSourceId": {
+          "__rl": true,
+          "value": "3b8e2105-765b-80f5-9920-000b5e7b70cc",
+          "mode": "list",
+          "cachedResultName": "Clients",
+          "cachedResultUrl": "https://app.notion.com/p/3b8e2105765b80e4a8b2d5f33e8494c5"
+        }
+      },
+      "type": "n8n-nodes-base.notionTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        0
+      ],
+      "id": "b4829c7a-21b9-46e7-a867-36f5bf54d154",
+      "name": "Notion Trigger",
+      "credentials": {
+        "notionApi": {
+          "id": "Bu8hyZF2e7i3qAMi",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "channel",
+        "channelId": "=client-{{ $json.Name.toLowerCase().replaceAll(\" \", \"-\") }}"
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        -16,
+        0
+      ],
+      "id": "aaeb4554-9d5a-48f7-90a8-2f7fa42460fd",
+      "name": "Create a channel",
+      "webhookId": "d540333f-22f1-4ef5-b649-bf4b862818f8",
+      "credentials": {
+        "slackApi": {
+          "id": "VqqU7hVYXkc5fMCS",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#client-updates",
+          "mode": "name"
+        },
+        "text": "=New Client Onboarded!\n\n• Client: {{ $('Notion Trigger').item.json.Name }}\n• Status: {{ $('Notion Trigger').item.json.Status }}\n• Email: {{ $('Notion Trigger').item.json.Email }}\n• Slack Channel created: #{{ $json.name }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        208,
+        0
+      ],
+      "id": "cc57dc8a-f752-4dab-8a85-95ffa0cd0482",
+      "name": "Send a message",
+      "webhookId": "50f15f84-6f25-4e1e-82e1-c973b22246fe",
+      "credentials": {
+        "slackApi": {
+          "id": "VqqU7hVYXkc5fMCS",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Notion Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create a channel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a channel": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "89406be6-b53b-4ae1-ad86-919c6cf7dc18",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a2faaf24540aa5642549409245045792f537d0d08218efdebf8dfb997ea66fb0"
+  },
+  "nodeGroups": [],
+  "id": "yzGyUwcTHZ97gcmk",
+  "tags": []
+}

@@ -1,0 +1,92 @@
+{
+  "name": "Notion Task → Slack Alert",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "dataSourceId": {
+          "__rl": true,
+          "value": "3b8e2105-765b-80bc-acf2-000bf498b049",
+          "mode": "list",
+          "cachedResultName": "Tasks",
+          "cachedResultUrl": "https://app.notion.com/p/3b8e2105765b80b9994bf9f7bb1eaf84"
+        }
+      },
+      "type": "n8n-nodes-base.notionTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "d268e4d3-06de-4e7c-8770-c71ad09c813e",
+      "name": "Notion Trigger",
+      "credentials": {
+        "notionApi": {
+          "id": "Bu8hyZF2e7i3qAMi",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#n8n-alerts",
+          "mode": "name"
+        },
+        "text": "=New Task Created in Notion!\n\n• Task: {{ $json.Name }}\n• Status: {{ $json.Status }}\n• Priority: {{ $json.Priority }}\n• Due Date: {{ $json[\"Due Date\"].start }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        224,
+        0
+      ],
+      "id": "d282b53b-7e19-4e41-900e-15b88ab02df0",
+      "name": "Send a message",
+      "webhookId": "a681abc9-308d-46b1-954f-6cf1bb9ec8f1",
+      "credentials": {
+        "slackApi": {
+          "id": "VqqU7hVYXkc5fMCS",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Notion Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "f188891d-6f19-4183-b3e0-56cfc3dcd7af",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a2faaf24540aa5642549409245045792f537d0d08218efdebf8dfb997ea66fb0"
+  },
+  "nodeGroups": [],
+  "id": "i2C9nimHTsWvOBy8",
+  "tags": []
+}
