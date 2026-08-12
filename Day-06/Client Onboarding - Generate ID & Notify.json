@@ -1,0 +1,122 @@
+{
+  "name": "Client Onboarding - Generate ID & Notify",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -240,
+        -48
+      ],
+      "id": "a6fa3933-7ed5-470a-b30b-6d4c3f90867d",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apptiKokDFe0xlG7C",
+          "mode": "list",
+          "cachedResultName": "MATalogics AI Operations Base",
+          "cachedResultUrl": "https://airtable.com/apptiKokDFe0xlG7C"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblOrIa0wrHDGcf3A",
+          "mode": "list",
+          "cachedResultName": "Clients",
+          "cachedResultUrl": "https://airtable.com/apptiKokDFe0xlG7C/tblOrIa0wrHDGcf3A"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        16,
+        -48
+      ],
+      "id": "16cf42d8-463f-4bbf-a7c9-efaa85925662",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EYXkPeyP5p75R5Ke",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#client-updates",
+          "mode": "name"
+        },
+        "text": "=🎉 New Client Onboarded!  \n\n• Client Name: {{ $json.fields.Name }} \n• Company: {{ $json.fields.Company }} \n• Email: {{ $json.fields.Email }} \n• Status: {{ $json.fields.Status }} \n• Client ID: CLI-{{ $json.id.slice(-6).toUpperCase() }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        256,
+        -48
+      ],
+      "id": "5eb5924f-21d6-4da2-ae79-560fa977fbe4",
+      "name": "Send a message",
+      "webhookId": "0c15236f-44aa-41bd-b8d0-3a07fc577bda",
+      "credentials": {
+        "slackApi": {
+          "id": "VqqU7hVYXkc5fMCS",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "ac0ebde6-e835-4ced-b721-e6e1778ada14",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a2faaf24540aa5642549409245045792f537d0d08218efdebf8dfb997ea66fb0"
+  },
+  "nodeGroups": [],
+  "id": "g2b7Pk7Iy7U4Z4fv",
+  "tags": []
+}

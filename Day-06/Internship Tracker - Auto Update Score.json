@@ -1,0 +1,223 @@
+{
+  "name": "Internship Tracker - Auto Update Score",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -160,
+        -32
+      ],
+      "id": "9f3946c9-0e17-4d15-86ba-4675b436f8b4",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apptiKokDFe0xlG7C",
+          "mode": "list",
+          "cachedResultName": "MATalogics AI Operations Base",
+          "cachedResultUrl": "https://airtable.com/apptiKokDFe0xlG7C"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblZMplS3yBQ9Jdt2",
+          "mode": "list",
+          "cachedResultName": "Interns",
+          "cachedResultUrl": "https://airtable.com/apptiKokDFe0xlG7C/tblZMplS3yBQ9Jdt2"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        64,
+        -32
+      ],
+      "id": "b151073d-be92-4ad3-a751-ce083f3d3db5",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EYXkPeyP5p75R5Ke",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "base": {
+          "__rl": true,
+          "value": "apptiKokDFe0xlG7C",
+          "mode": "list",
+          "cachedResultName": "MATalogics AI Operations Base",
+          "cachedResultUrl": "https://airtable.com/apptiKokDFe0xlG7C"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblZMplS3yBQ9Jdt2",
+          "mode": "list",
+          "cachedResultName": "Interns",
+          "cachedResultUrl": "https://airtable.com/apptiKokDFe0xlG7C/tblZMplS3yBQ9Jdt2"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "id": "={{ $json.id }}",
+            "Performance Score": "={{ Number($json.fields['Performance Score'] || 0) + 5 }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Intern Name",
+              "displayName": "Intern Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "AI",
+                  "value": "AI"
+                },
+                {
+                  "name": "Automation",
+                  "value": "Automation"
+                },
+                {
+                  "name": "Marketing",
+                  "value": "Marketing"
+                },
+                {
+                  "name": "Finance",
+                  "value": "Finance"
+                },
+                {
+                  "name": "HR",
+                  "value": "HR"
+                },
+                {
+                  "name": "Operations",
+                  "value": "Operations"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Task Count",
+              "displayName": "Task Count",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Performance Score",
+              "displayName": "Performance Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        288,
+        -32
+      ],
+      "id": "b594e279-f95a-498a-aae9-110c5886cb90",
+      "name": "Update record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EYXkPeyP5p75R5Ke",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Update record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3147e9c8-bc62-4a34-8f3c-23d6662d7f48",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a2faaf24540aa5642549409245045792f537d0d08218efdebf8dfb997ea66fb0"
+  },
+  "nodeGroups": [],
+  "id": "VHVljYhw7ct1lgi1",
+  "tags": []
+}

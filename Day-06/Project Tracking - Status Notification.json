@@ -1,0 +1,118 @@
+{
+  "name": "Project Tracking - Status Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -224,
+        -16
+      ],
+      "id": "1647b4d0-c150-480e-b6ce-a49a613f8bc9",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "search",
+        "base": {
+          "__rl": true,
+          "value": "apptiKokDFe0xlG7C",
+          "mode": "list",
+          "cachedResultName": "MATalogics AI Operations Base",
+          "cachedResultUrl": "https://airtable.com/apptiKokDFe0xlG7C"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tbl6VuV9ei3gkyKKw",
+          "mode": "list",
+          "cachedResultName": "Projects",
+          "cachedResultUrl": "https://airtable.com/apptiKokDFe0xlG7C/tbl6VuV9ei3gkyKKw"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        -16
+      ],
+      "id": "4acf23d6-4f61-44a5-a579-82ca633fd04e",
+      "name": "Search records",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EYXkPeyP5p75R5Ke",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "samiaazrab00@gmail.com",
+        "subject": "=Project Status Update - {{ $json.fields['Project Name'] }}",
+        "message": "=Project Status Updated\n\nProject Name: {{ $json.fields['Project Name'] }}\n\nAssigned To: {{ $json.fields['Assigned To'] }}\n\nDeadline: {{ $json.fields.Deadline }}\n\nCurrent Status: {{ $json.fields.Status }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        224,
+        -16
+      ],
+      "id": "f8f01703-830c-483b-b50b-abd57c5b178e",
+      "name": "Send a message",
+      "webhookId": "c9b1889c-a960-4dad-a1a5-0cd8729df10a",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JVQ4CFLhuOSeOgAn",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "4738cebb-4239-48f1-b381-7f87473604fd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a2faaf24540aa5642549409245045792f537d0d08218efdebf8dfb997ea66fb0"
+  },
+  "nodeGroups": [],
+  "id": "ahUsrNXMWnlMvZjO",
+  "tags": []
+}
