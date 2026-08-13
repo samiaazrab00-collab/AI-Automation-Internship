@@ -1,0 +1,421 @@
+{
+  "name": "AI Client Onboarding System",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "client-onboarding",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -336,
+        -48
+      ],
+      "id": "18812f52-c04a-4d46-80b6-a33f16d05b59",
+      "name": "Webhook",
+      "webhookId": "96978a2a-75d9-4c04-a5e8-b954fac66124"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "GPT-5-MINI"
+        },
+        "responses": {
+          "values": [
+            {
+              "role": "system",
+              "content": "You are an expert sales assistant that classifies new client requests.\n\nYou will receive client data. Return ONLY a valid JSON object with these exact fields:\n\n{\n  \"service_category\": \"short category name\",\n  \"priority\": \"HIGH or MEDIUM or LOW\",\n  \"summary\": \"one sentence summary\",\n  \"next_action\": \"recommended next action\"\n}\n\nStrict Priority Rules (follow exactly):\n- If Budget >= 500000 → priority = \"HIGH\"\n- If Budget >= 200000 and Budget < 500000 → priority = \"MEDIUM\"\n- If Budget < 200000 → priority = \"LOW\"\n\nDo not explain anything. Return only pure JSON."
+            },
+            {
+              "content": "=Client Name: {{ $json.body.client_name }}\nCompany: {{ $json.body.company_name }}\nEmail: {{ $json.body.email }}\nService Required: {{ $json.body.service_required }}\nProject Description: {{ $json.body.project_description }}\nBudget: {{ $json.body.budget }}"
+            }
+          ]
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.3,
+      "position": [
+        -160,
+        -48
+      ],
+      "id": "3ad2e57b-bde4-4ee7-8194-45fb1fb5bbcc",
+      "name": "Message a model",
+      "credentials": {
+        "openAiApi": {
+          "id": "kyHjAPj4FCuXqkVU",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": {
+          "__rl": true,
+          "value": "appJNfNueUsVmvQ52",
+          "mode": "list",
+          "cachedResultName": "Client Onboarding",
+          "cachedResultUrl": "https://airtable.com/appJNfNueUsVmvQ52"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblEGukpFxpQtC14h",
+          "mode": "list",
+          "cachedResultName": "Clients",
+          "cachedResultUrl": "https://airtable.com/appJNfNueUsVmvQ52/tblEGukpFxpQtC14h"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Client Name": "={{ $json.original.body.client_name }}",
+            "Company": "={{ $json.original.body.company_name }}",
+            "Email": "={{ $json.original.body.email }}",
+            "Service": "={{ $json.original.body.service_required }}",
+            "Description": "={{ $json.original.body.project_description }}",
+            "Budget": "={{ $json.original.body.budget }}",
+            "Category": "={{ $json.service_category }}",
+            "Summary": "={{ $json.summary }}",
+            "Status": "New",
+            "Priority": "={{ $json.priority }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Client Name",
+              "displayName": "Client Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Company",
+              "displayName": "Company",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Service",
+              "displayName": "Service",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Description",
+              "displayName": "Description",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Budget",
+              "displayName": "Budget",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "HIGH",
+                  "value": "HIGH"
+                },
+                {
+                  "name": "MEDIUM",
+                  "value": "MEDIUM"
+                },
+                {
+                  "name": "LOW",
+                  "value": "LOW"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "New",
+                  "value": "New"
+                },
+                {
+                  "name": "In Progress",
+                  "value": "In Progress"
+                },
+                {
+                  "name": "Completed",
+                  "value": "Completed"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Created At",
+              "displayName": "Created At",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.2,
+      "position": [
+        352,
+        -176
+      ],
+      "id": "6db64a5f-aee1-4530-a16e-9a79604b4bd1",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "EYXkPeyP5p75R5Ke",
+          "name": "Airtable Personal Access Token account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "#new-clients",
+          "mode": "name"
+        },
+        "text": "={{ $json.priority === 'HIGH' ? '🚨 HIGH PRIORITY CLIENT' : $json.priority === 'MEDIUM' ? '⚠️ MEDIUM PRIORITY CLIENT' : '📋 STANDARD CLIENT' }}\n\n*{{ $json.original.body.client_name }}* - {{ $json.original.body.company_name }}\n\n• *Service:* {{ $json.service_category }}\n• *Budget:* PKR {{ $json.original.body.budget }}\n• *Priority:* {{ $json.priority }}\n• *AI Summary:* {{ $json.summary }}\n• *Next Action:* {{ $json.next_action }}\n\n_Airtable + Notion records created successfully._",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.5,
+      "position": [
+        560,
+        -48
+      ],
+      "id": "753ac013-c19f-41c7-b6ee-e68056b4f425",
+      "name": "Send a message",
+      "webhookId": "536fe602-ba4c-4ab6-9463-5f5a03134ace",
+      "credentials": {
+        "slackApi": {
+          "id": "VqqU7hVYXkc5fMCS",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.output[0].content[0].text;\n\nconst parsed = JSON.parse(raw);\n\nreturn {\n  json: {\n    ...parsed,\n    // also keep original webhook data if needed\n    original: $('Webhook').item.json\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -48
+      ],
+      "id": "2087ee69-67b4-47bd-85c2-1bfac82fcf35",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "dataSourceId": {
+          "__rl": true,
+          "value": "3bbe2105-765b-80eb-8eaa-000b0b73de71",
+          "mode": "list",
+          "cachedResultName": "Client Projects",
+          "cachedResultUrl": "https://app.notion.com/p/3bbe2105765b8043a30bcfc6d09b8a59"
+        },
+        "title": "={{ $json.original.body.company_name }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Client|rich_text",
+              "textContent": "={{ $json.original.body.client_name }}"
+            },
+            {
+              "key": "Service|rich_text",
+              "textContent": "={{ $json.original.body.service_required }}"
+            },
+            {
+              "key": "Priority|select",
+              "selectValue": "={{ $json.priority }}"
+            },
+            {
+              "key": "Summary|rich_text",
+              "textContent": "={{ $json.original.body.project_description }}"
+            },
+            {
+              "key": "Next Action|rich_text",
+              "textContent": "={{ $json.next_action }}"
+            },
+            {
+              "key": "Budget|number",
+              "numberValue": "={{ $json.original.body.budget }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 3,
+      "position": [
+        368,
+        80
+      ],
+      "id": "3101fbd9-6042-48d3-8517-000d7fd898fd",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "Bu8hyZF2e7i3qAMi",
+          "name": "Notion account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "f4eb682c-bb4f-497b-aa3c-303a91ba12e6",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a2faaf24540aa5642549409245045792f537d0d08218efdebf8dfb997ea66fb0"
+  },
+  "nodeGroups": [],
+  "id": "iSHIgZCnMS6xKWMy",
+  "tags": []
+}
