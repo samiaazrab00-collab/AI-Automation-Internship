@@ -52,7 +52,7 @@ It must not:
 
 **Result:** Pass. Report `RPT-2026-08-28-FINAL`. Status: all systems healthy.
 
-### Case 5 — Fresh high-value deal
+### Case 4 — Fresh high-value deal
 **Purpose:** Prove high value alone does not mean stuck.
 
 **Setup:** D-104 kept at $22,000 with activity on 28 Aug and follow-up on 2 Sep. D-101 and D-102 put back to old dates so something else should still be flagged. Tasks and support left healthy.
@@ -61,7 +61,7 @@ It must not:
 
 **Result:** Pass. Email listed D-101 and D-102 only. D-104 grouped with current deals D-103 and D-105.
 
-### Case 10 — Human email
+### Case 5 — Human email
 Covered by Case 1. The briefing is sent only to the locked operator inbox, never to a customer.
 
 ## Safety checks seen during testing

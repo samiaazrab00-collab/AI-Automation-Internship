@@ -22,8 +22,3 @@ Every run it:
 - Email recipient is locked to the operator
 - Reassignment and customer outreach stay under Needs Human Approval
 
-## Example results
-- Case 1 flagged D-104, D-101, D-102, S-01, S-04, and Ahmad's overload
-- Case 2 reused T-FUP-003 and T-ESC-003; only added missing T-ESC-004 for S-01
-- Case 3 returned High Priority: None after the board was made healthy
-- Case 5 flagged D-101 and D-102 but treated D-104 ($22,000, activity today) as current
