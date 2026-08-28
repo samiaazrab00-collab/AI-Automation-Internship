@@ -1,81 +1,131 @@
 # Task 06 — Recruitment Pipeline
 
-## Task Description
-Build a recruitment management system for a company hiring developers. Candidates apply through a Zapier form and automatically enter a Kanban pipeline.
+## Objective
 
-The system:
-- Collects candidate details through an application form
-- Stores each application in a Zapier Table
-- Shows every candidate as a card on a Kanban board
-- Sets Stage to Applied when an application arrives
-- Assigns Priority from years of experience (5+ High, 2–4 Medium, under 2 Low)
-- Sends a screening email when a card moves to Screening
-- Sends an interview scheduling email when a card moves to Technical Interview
-- Notifies HR when a card moves to HR Interview
-- Sends a congratulations email when a card moves to Hired
-- Sends a rejection email when a card moves to Rejected from any stage
-- Does not send an email when a card moves to Offer
-- Notifies the recruiter if a candidate has not been updated for 5 days
+Build a recruitment management system in Zapier for a company hiring developers.
 
-## Components
-- **Form**: Sales / Career Apply page (Candidate Application)
-- **Table**: Candidates
-- **Kanban**: Recruitment Pipeline
-- **Zap**: New Candidate — Set Stage and Priority
-- **Zap**: Candidate Stage Change Emails
-- **Zap**: Candidate 5-Day Follow-Up
+Candidates apply through a form. Each application is stored in a Zapier Table and appears on a Kanban board. Automation assigns priority from years of experience, sends emails when a card changes stage, and alerts the recruiter if a candidate is not updated for 5 days.
 
-## Test Results
+## Tools used
 
-**Test 1 — New Application + High Priority**
-- Candidate: Samia
-- Position: Frontend Developer
-- Experience: 6 years
-- Result: Record created in Candidates. Stage = Applied. Priority = High. Card appeared under Applied.
+- Zapier Forms (Interface)
+- Zapier Tables
+- Zapier Kanban
+- Zaps (Paths, Schedule, Gmail / Email by Zapier)
 
-**Test 2 — New Application + Medium Priority**
-- Candidate: hajra
-- Position: Backend Developer
-- Experience: 3 years
-- Result: Record created. Stage = Applied. Priority = Medium. Card appeared under Applied.
+## What was built
 
-**Test 3 — New Application + Low Priority**
-- Candidate: Ali
-- Position: DevOps
-- Experience: 1 year
-- Result: Record created. Stage = Applied. Priority = Low. Card appeared under Applied.
+### 1. Application form
 
-**Test 4 — Screening Email**
-- Input: Moved Samia from Applied → Screening
-- Result: Screening email sent to the candidate
+Page: Apply
 
-**Test 5 — Technical Interview Email**
-- Input: Moved Samia from Screening → Technical Interview
-- Result: Interview scheduling email sent to the candidate
+Fields collected from the candidate:
 
-**Test 6 — HR Interview Notification**
-- Input: Moved Samia from Technical Interview → HR Interview
-- Result: HR notification sent with candidate name, email, phone, experience, and expected salary
+- Candidate Name
+- Email
+- Phone
+- Position
+- Experience (years)
+- Expected Salary
+- Resume link
+- Portfolio link
+- Availability
 
-**Test 7 — Offer Stage**
-- Input: Moved Samia from HR Interview → Offer
-- Result: No automatic email sent (correct)
+Internal fields are not shown on the form:
 
-**Test 8 — Hired Email**
-- Input: Moved Samia from Offer → Hired
-- Result: Congratulations email sent to the candidate
+- Stage
+- Priority
+- Last Updated
+- Recruiter Email
 
-**Test 9 — Rejection Email**
-- Candidate: hajra
-- Input: Moved card to Rejected
-- Result: Rejection email sent to the candidate
+### 2. Candidates table
 
-**Test 10 — 5-Day Recruiter Alert**
-- Candidate: Ali
-- Stage: Applied
-- Last Updated: 20/08/2026
-- Result: Recruiter received “No update for 5 days: Ali” with position, stage, priority, and last updated date
+Table name: Candidates
 
-**Test 11 — Closed Candidates Excluded**
-- Hired and Rejected rows with today’s date were not included in the 5-day reminder
-- Result: No extra recruiter emails for closed candidates
+Columns:
+
+- Candidate Name
+- Email
+- Phone
+- Position
+- Experience
+- Expected Salary
+- Resume link
+- Portfolio link
+- Availability
+- Stage
+- Priority
+- Last Updated
+- Recruiter Email
+
+Stage options:
+
+Applied → Screening → Technical Interview → HR Interview → Offer → Hired → Rejected
+
+Default stage for a new application: Applied
+
+### 3. Kanban board
+
+Page: Pipeline
+
+- Data source: Candidates table
+- Group by: Stage
+- Card title: Candidate Name
+- Card detail: Position
+
+Recruiters move cards between columns. Moving a card updates Stage and triggers email automation.
+
+### 4. Automation 1 — New application
+
+Trigger: New record in Candidates
+
+The Zap updates the same record (it does not create a second row):
+
+| Experience | Priority |
+|---|---|
+| 5+ years | High |
+| 2–4 years | Medium |
+| Less than 2 years | Low |
+
+It also sets:
+
+- Stage = Applied
+- Last Updated = current time
+
+### 5. Automation 2 — Stage emails
+
+Trigger: Candidates record updated (Stage changed)
+
+| Stage | Action |
+|---|---|
+| Screening | Email candidate — screening next steps |
+| Technical Interview | Email candidate — interview scheduling |
+| HR Interview | Email HR — candidate details |
+| Offer | No email (recruiter handles the offer) |
+| Hired | Email candidate — congratulations |
+| Rejected | Email candidate — rejection |
+| Applied | No email |
+
+### 6. Automation 3 — 5-day follow-up
+
+Trigger: Schedule by Zapier — every day
+
+The Zap searches Candidates for records where:
+
+- Last Updated is more than 5 days ago
+- Stage is not Hired
+- Stage is not Rejected
+
+Then it emails the recruiter with the candidate name, position, stage, priority, and last updated date.
+
+## Test evidence
+
+| Candidate | Position | Result |
+|---|---|---|
+| Samia | Frontend Developer | Moved Applied → Screening → Technical Interview → HR Interview → Offer → Hired. Matching emails sent. |
+| hajra | Backend Developer | Rejection email sent. |
+| Ali | DevOps | Left in Applied with Last Updated 20/08/26. Recruiter received “No update for 5 days” email. |
+
+## Extra challenge
+
+Completed: if a candidate has no update for 5 days, notify the recruiter.
