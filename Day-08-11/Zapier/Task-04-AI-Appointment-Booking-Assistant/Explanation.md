@@ -1,20 +1,35 @@
-# How the Automation Works
+# Explanation – AI Appointment Booking Assistant
 
-1. User interacts with the Clinic Appointment Assistant chatbot.
-2. The bot identifies Doctor, Date, and Time from the user’s message.
-3. It converts relative dates (like “tomorrow”) into a real date.
-4. The bot collects Patient Name, Phone, Reason, Doctor, Date, and Time using a form.
-5. A new record is created in the “Clinic Appointment Assistant Collected Data” table.
-6. The Zap is triggered:
-   - Code by Zapier generates a unique Appointment ID (APT-YYYYMMDD-HHMM)
-   - Time is standardized for consistent matching
-   - Find Records checks if the same Doctor + Date + Time already exists
-   - Filter stops the Zap if a matching record is found (prevents double booking)
-   - If the slot is free, a new record is created in the Appointments table with Status = Confirmed
+## Overview
+I built a complete appointment booking system using Zapier Chatbots and Tables. The system allows users to book appointments through natural conversation and automatically creates structured records while preventing double bookings.
 
-## Key Features
+## How the System Works
+
+1. **Chatbot Conversation**
+   - The user starts a conversation with the Clinic Appointment Assistant.
+   - The bot identifies the Doctor, Date, and Time from natural language.
+   - It converts relative dates (e.g. “tomorrow”, “the day after tomorrow”) into real dates.
+   - It then collects Patient Name, Phone, Reason, Doctor, Date, and Time using a form.
+
+2. **Data Collection**
+   - All collected information is stored in the “Clinic Appointment Assistant Collected Data” table.
+   - This table acts as the trigger for the automation.
+
+3. **Automation (Zap)**
+   - **Trigger**: New record in the Collected Data table.
+   - **Code by Zapier**: Generates a unique Appointment ID (format: APT-YYYYMMDD-HHMM).
+   - **Time Standardization**: Normalizes the Time format for consistent matching.
+   - **Find Records**: Checks if an appointment with the same Doctor + Date + Time already exists.
+   - **Filter**: Stops the Zap if a matching record is found (prevents double booking).
+   - **Create Record**: Creates a new appointment in the Appointments table only if the slot is free.
+   - Status is set to “Confirmed”.
+
+## Key Features Implemented
 - Natural language understanding
 - Relative date conversion
 - Unique Appointment ID generation
 - Double booking prevention using Find Records + Filter
-- Structured storage in Zapier Tables
+- Structured data storage in Zapier Tables
+
+## Result
+The system successfully creates appointment records and blocks duplicate bookings for the same Doctor, Date, and Time combination.
