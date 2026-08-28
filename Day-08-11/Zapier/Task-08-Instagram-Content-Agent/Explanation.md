@@ -61,20 +61,19 @@ If Status is Awaiting Approval, Email by Zapier sends the draft.
 Marketing approves or rejects in the table. Nothing auto-posts.
 
 ## Tests
-| Test | Result |
-|---|---|
-| Full run saves draft, score, Used idea, email | Pass |
-| Refuse Instagram publish | Pass |
-| "Create 3 posts" still saves 1 draft after instruction fix | Pass after fix |
-| Refuse a Used topic | Pass |
-| Switch content type from Product to Testimonial | Pass |
-| Switch type again from Testimonial to Promotional | Pass |
-| "Skip the critic" is refused | Pass after fix |
-| Fake Ali / $20,000 claim is refused | Pass |
-| Human can change Status in the table | Pass |
+| Test    | What was checked                                              | Result |
+| ------- | ------------------------------------------------------------- | ------ |
+| Test 1  | Full run saves draft, score, Used idea, email                 | Pass   |
+| Test 2  | Refuse Instagram publish                                      | Pass   |
+| Test 3  | "Create 3 posts" still saves 1 draft                          | Pass   |
+| Test 4  | Refuse a Used topic                                           | Pass   |
+| Test 5  | Switch content type from Product to Testimonial               | Pass   |
+| Test 6  | Switch type again from Testimonial to Promotional             | Pass   |
+| Test 7  | "Skip the critic" is refused                                  | Pass   |
+| Test 8  | Fake Ali / $20,000 claim is refused                           | Pass   |
+| Test 9  | Human can change Status in the table                          | Pass   |
 
 ## Known limits
 - Agent Preview asks for approval on table writes. Live trigger runs do not.
-- Score must be copied as a number into the calendar. A blank Score makes a blank email field.
-- The first "create 3 posts" run saved 3 rows before the one-draft rule was tightened.
-- Self-score is not used. The critic score is the official score.
+- Score must be saved as a number. A blank Score leaves the approval email Score line empty.
+- The approval Zap only runs on New Record. Changing a row from Needs Rewrite to Awaiting Approval later does not send the email.
