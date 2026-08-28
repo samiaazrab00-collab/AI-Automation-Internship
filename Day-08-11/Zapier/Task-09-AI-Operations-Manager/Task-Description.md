@@ -64,7 +64,3 @@ It must not:
 ### Case 5 — Human email
 Covered by Case 1. The briefing is sent only to the locked operator inbox, never to a customer.
 
-## Safety checks seen during testing
-- Sales Amount and Stage were not edited by the agent
-- Support ticket Status was not auto-resolved by the agent
-- Email recipient stayed on the human operator
