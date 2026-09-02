@@ -1,98 +1,88 @@
 # AI Automation Internship
 
-This repository contains my daily tasks and projects completed during the **AI Automation (No-Code & Low-Code Systems Engineering) Internship** at MATalogics.
+Projects completed during the **AI Automation Internship** at MATalogics.
 
 ---
 
-## 📁 Repository Structure
+## Structure
 
 ### Day-03 / Lead Management API
-- Built a complete CRUD Lead Management system using n8n Webhooks
-- Integrated with Google Sheets
-- Tested all endpoints (Create, Read, Update, Delete) using Postman
-- Open-source contribution and GitHub practice
+CRUD lead system using n8n, Google Sheets, and Postman.
 
 ### Day-05 / Slack & Notion
-- Connected Notion databases with Slack
-- Built workflows for task alerts and client/student data management
-- Automated notifications between Notion and Slack
+Automated task alerts and data updates between Notion and Slack.
 
 ### Day-06 / Airtable
-- Created tracking and notification systems
-- Built workflows for lead alerts, client onboarding, AI agent monitoring, project status updates, and internship tracking
+Notification and tracking systems for leads, clients, projects, and AI agents.
 
 ### Day-07 / AI Client Onboarding
-- Built an end-to-end AI Client Onboarding System
-- Integrated Vapi Voice Agent + n8n + Airtable + Notion + Slack
-- Automated client intake, data storage, onboarding task creation, and team notifications
+End-to-end onboarding system using Vapi, n8n, Airtable, Notion, and Slack.
 
 ---
 
-## Zapier (Day 8–11)
-
-Implemented 9 Zapier automation tasks covering Interfaces, Tables, Chatbots, Kanban pipelines, and Autonomous Agents.
+## Zapier
 
 ### Task 1 – Lead Intake System
-- Built a Zapier Interface form for sales lead capture
-- Stored submissions in a Zapier Table
-- Calculated lead score and assigned priority (Hot / Warm / Cold)
+Lead form + table with automatic scoring and priority.
 
 ### Task 2 – Employee Expense Approval
-- Built an employee expense submission portal
-- Applied risk rules based on amount and receipt
-- Automated approval, manager request, or finance escalation
+Expense portal with risk-based approval rules.
 
 ### Task 3 – AI Customer Support Bot
-- Created a support chatbot for CloudFlow
-- Answered pricing, features, and troubleshooting questions
-- Escalated unknown or human-requested issues into support tickets
+Support chatbot that answers questions and creates tickets.
 
 ### Task 4 – AI Appointment Booking Assistant
-- Built a clinic appointment chatbot
-- Collected patient details, doctor, date, and time
-- Created appointment records and avoided unavailable slots
+Clinic chatbot that books appointments and checks availability.
 
 ### Task 5 – Customer Onboarding Pipeline
-- Built a CRM-style onboarding form and Kanban pipeline
-- Moved clients through stages from New Lead to Completed
-- Triggered emails and notifications at each stage
+Form + Kanban pipeline with stage-based automation.
 
 ### Task 6 – Recruitment Pipeline
-- Built a candidate application form and hiring Kanban board
-- Assigned priority based on experience
-- Automated screening, interview, offer, and rejection emails
+Candidate application system with hiring stages and email automation.
 
-### Task 7 – AI Customer Support Resolution Agent
-- Built an autonomous support agent that decides the next action
-- Detected intent and severity
-- Created or updated tickets instead of only answering questions
+### Task 7 – AI Support Resolution Agent
+Autonomous agent that decides the next support action.
 
 ### Task 8 – Instagram Content Agent
-- Built an AI content agent that decides what to post
-- Generated captions, hooks, CTAs, and hashtags
-- Stored approved content in a calendar with human approval
+AI agent that plans, generates, and reviews social content.
 
 ### Task 9 – AI Operations Manager
-- Built a daily operations agent
-- Analyzed sales, tasks, and support data
-- Identified issues, recommended actions, and created a daily report
+Daily operations agent that analyzes sales, tasks, and support issues.
 
 ---
 
-## 🛠️ Tools Used
+## Day 14–17 / SQL & Database
 
-- n8n
-- Zapier
-- Postman
-- Google Sheets
-- Notion
-- Slack
-- Airtable
-- Vapi
-- Git & GitHub
+### Task 1 – Lead Management Database
+Created a `leads` table in PostgreSQL and practiced SQL queries for insert, select, update, delete, and ranking.
+
+### Task 2 – SQL Sales Analytics
+Wrote analytics queries for total leads, status counts, average score, top leads, and leads by source.
+
+### Task 3 – AI Automation CRM Design
+Designed a CRM database on paper for customers, leads, conversations, and messages.
+
+### Task 4 – AI Customer Support Knowledge System
+Designed a support database covering tickets, conversations, products, orders, and FAQs.
+
+### Task 5 – Lead Capture Automation
+Built an n8n webhook workflow that validates a lead and stores it in PostgreSQL and Supabase.
+
+### Task 6 – AI Lead Qualification + Database
+Used an AI agent to score, categorize, and save leads into PostgreSQL and Supabase.
+
+### Task 7 – AI Customer Conversation Memory
+Built a support agent that stores and retrieves previous conversation history from the database.
+
+### Task 8 – Natural Language → SQL AI Agent
+Built an agent that converts business questions into safe, read-only SQL queries.
+
+### Task 9 – Automated Database Reporting
+Created a scheduled report workflow that queries the database, generates a summary, and sends it to the manager.
 
 ---
 
-## 📌 About
+## Tools
 
-This internship focuses on building real-world automation systems using no-code and low-code tools, with a strong emphasis on practical problem-solving.
+n8n · Zapier · Postman · Google Sheets · Notion · Slack · Airtable · Vapi · PostgreSQL · Supabase · GitHub
+
