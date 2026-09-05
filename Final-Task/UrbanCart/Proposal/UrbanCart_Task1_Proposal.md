@@ -11,156 +11,135 @@
 
 From the discovery meeting:
 
-- Customers wait too long for simple answers: price, stock, “where is my order”, returns, shipping, warranty.
-- Staff invent answers when they cannot find the file. Sarah does not want the AI to do the same.
+- Customers wait too long for simple answers: price, stock, order status, returns, shipping, warranty.
+- Staff invent answers when they cannot find the file. The AI must not do the same.
 - Sales leads are lost in chat. Support complaints are not tracked as tickets.
-- Slack is already noisy. Only high-value leads and serious complaints should ping the team.
-- Management wants one place to see leads and tickets. The team already uses Notion for process notes.
-- Success = 24/7 chat or phone, answers from UrbanCart’s own data, useful leads for sales, basic order lookup, and a human alert when the case is too serious for the agent.
+- Slack is already noisy. Only important events should ping the team.
+- Management wants one place to see leads, tickets and tasks. The team already uses Notion.
+- Policy files change. Uploading a new document should update answers without rewriting the agent.
+- Customers arrive from the website, WhatsApp, Instagram and phone.
+- Success = 24/7 coverage, answers from UrbanCart data, useful leads, basic order lookup, and a human alert when the case is too serious for the agent.
 
 ---
 
-## 2. Problems to solve
+## 2. Problems and how they are solved
 
-| Problem | Why it hurts | What “solved” looks like |
-|---|---|---|
-| No 24/7 receptionist | After-hours buyers drop off | Voice and web hit the same brain |
-| Answers are guessed | Wrong price or a fake order status | Catalog and orders come from the database |
-| Policies live in files nobody searches | “Can I return after 10 days?” gets a yes | Agent reads the return / shipping / warranty text |
-| Leads stay in the transcript | Sales never calls the buyer | Lead row in Airtable + Slack only if Ready and high value |
-| Damage cases have no paper trail | Refund fights, no folder | P1 ticket + Slack + Drive folder + Notion incident |
-| Slack on every chat | Team ignores real alerts | Quiet Slack by design |
-
----
-
-## 3. What the agent may do vs what a human must do
-
-**Automated**
-
-- Product price and stock from the catalog
-- Order status for a real code such as UC-10452
-- Return, shipping, and warranty answers from stored policy text
-- Create a lead when the caller shares name, phone, product, budget, and city
-- Create a P1 ticket when the parcel is damaged or the customer is angry
-- Notify Slack only for those two cases
-- Create an evidence folder and a Notion incident for each new P1 ticket
-
-**Stays with a human**
-
-- Approve a refund
-- Approve a return after the policy window
-- Change a courier promise
-- Rewrite policy
-- Close or reassign a ticket
-
-If the data is missing, the agent says so. It does not invent a price or a tracking status.
+| Problem | Solution |
+|---|---|
+| No 24/7 receptionist | One n8n brain behind web, WhatsApp, Instagram and Vapi voice |
+| Guessed prices / tracking | PostgreSQL catalog and orders on Supabase |
+| Policies nobody searches | Drive folder → ingest → chunk → embedding → vector search |
+| Lost leads | Airtable Leads + Slack `#sales-leads` only when Ready and high value |
+| Damage has no paper trail | P1 ticket + Task + Slack + Drive evidence + Notion incident |
+| Slack on every chat | Four alert types only (below) |
+| No customer memory | `customers`, `conversations`, `messages` on Supabase |
+| Ops cannot see work | Airtable Tasks created with every P1 ticket |
+| Policy updates need a developer | Ingest webhook replaces chunks; chat code stays unchanged |
 
 ---
 
-## 4. Users and journeys
+## 3. Automate vs human
 
-**Customer (web chat or phone)**  
-Asks price, order status, delivery, returns, or warranty. Can leave a buying signal or report damage.
+**Automated:** price and stock; order status for a real code; policy answers from retrieved chunks; lead capture; P1 ticket + task; Slack on the four events below; Drive evidence folder + Notion incident; conversation logging; knowledge ingest and embeddings.
 
-**Sales**  
-Works the **Leads** table. Gets Slack `#sales-leads` only when the buyer is Ready and the deal is high value (budget ≥ Rs. 100,000 or iPhone).
+**Human:** refunds; returns outside the published window; courier promise changes; policy authorship; closing tickets.
 
-**Support**  
-Works **Tickets**, view **P1 Open**. Gets Slack `#support-priority` on damage or a serious complaint. Opens the Drive folder and the Notion incident created after the ticket.
-
-**Operations / management**  
-Airtable is the live board. Notion holds the incident write-up. Drive holds the evidence pack.
+If a fact is missing, the agent says support must take over.
 
 ---
 
-## 5. How the customer reaches UrbanCart
+## 4. Users and channels
 
-One contract for every channel:
-
-```json
-{ "text": "customer message", "channel": "web | voice | whatsapp" }
-```
-
-- Web chat posts that JSON to the orchestration webhook.
-- Vapi is the phone / voice mouth. A tool on the assistant posts the same JSON with `"channel": "voice"`.
-- n8n is the only brain. Vapi does not keep a second catalog.
+- **Customer** — website chat, WhatsApp webhook, Instagram webhook, phone (Vapi). Same JSON contract: `{ "text", "channel" }`.
+- **Sales** — Airtable Leads. Slack `#sales-leads` for Ready + high value.
+- **Support** — Airtable Tickets (P1 Open). Slack `#support-priority`.
+- **Operations** — Airtable Tasks; Slack `#ops-alerts` for late orders; Slack `#workflow-errors` when automation fails.
+- **Management** — Airtable boards + Notion Incidents + Drive evidence.
 
 ---
 
-## 6. Architecture (and why each tool)
+## 5. Architecture
 
 ```text
-Customer (web / Vapi voice)
-        → n8n webhook
-              → Supabase / PostgreSQL   products, orders, policy chunks
-              → Airtable                Leads, Tickets
-              → Slack                   #sales-leads, #support-priority
-              → Zapier (on P1 Open)
-                    → Google Drive      UrbanCart Evidence / ticket folder
+Web / WhatsApp / Instagram / Vapi
+        → n8n  /webhook/urbancart-chat  (and channel-specific doors)
+              → Supabase PostgreSQL     products, orders, customers,
+                                        conversations, messages
+              → RAG                     embed question → match_chunks
+              → Airtable                Leads, Tickets, Tasks
+              → Slack                   four rooms only
+              → Zapier on P1 Open
+                    → Google Drive      UrbanCart Evidence
                     → Notion            Incidents
+
+Drive  UrbanCart Knowledge / Active
+        → n8n  /webhook/urbancart-ingest
+              → documents + chunks + embeddings
 ```
 
-| Tool | Role | Why it fits |
+| Tool | Role | Why |
 |---|---|---|
-| **Vapi** | Voice receptionist. Speaks the orchestrated reply. | Sarah asked for phone as well as chat. Vapi is only the mouth. |
-| **n8n** | Intent router and orchestrator. Classifies product, order, policy, lead, complaint, or other. Calls the other systems. | One workflow owns the live conversation. |
-| **Supabase (PostgreSQL)** | Source of truth for catalog, orders, and policy chunks. | Structured rows for SKU, price, stock, order code, and status. REST access from n8n. |
-| **RAG** | Policy questions retrieve a chunk (`return_policy`, `shipping_policy`, `warranty_policy`). The reply is that text plus a short citation. | Stops the model inventing a 10-day return window. |
-| **Airtable** | Day-to-day board: Leads for sales, Tickets for support, **P1 Open** view. | The team can filter and assign without opening the database. |
-| **Slack** | Interrupt wire only. | Matches “don’t make Slack noisy.” |
-| **Zapier** | Office side door: new or updated P1 ticket → Drive folder + Notion page. | Back-office tools, not the live conversation. Slack stays in n8n so the alert is not sent twice. |
-| **Google Drive** | Evidence packs for P1 cases under **UrbanCart Evidence**. | A folder the team can drop photos into later. |
-| **Notion** | Internal incident record (summary, order code, Airtable URL, Drive folder, status). | Already how the team writes things down. |
-
-n8n owns the conversation. Zapier owns the paper trail after the ticket exists. That is why both tools are in the design.
+| **Vapi** | Voice mouth. Tool `urbancart_ask` posts to the chat webhook. | Phone coverage without a second catalog. |
+| **n8n** | Conversation brain + knowledge ingest. | One place for intent, lookups, writes and alerts. |
+| **Supabase / PostgreSQL** | Products, orders, customers, conversations, messages, documents, chunks, `vector` embeddings. | Structured truth plus pgvector for RAG. |
+| **RAG** | Ingest file → chunk → `text-embedding-3-small` → `match_chunks` → reply with citation. | Grounded policy answers; knowledge updates without editing the agent. |
+| **Google Drive** | `UrbanCart Knowledge / Active` is the policy source. `UrbanCart Evidence` holds P1 folders. | Files the team already knows how to edit. |
+| **Airtable** | Leads, Tickets, Tasks. | Non-technical daily board. |
+| **Slack** | Interrupt wire only. | Matches “do not make Slack noisy.” |
+| **Zapier** | P1 ticket → Drive folder + Notion incident. | Back office after the ticket exists. |
+| **Notion** | Incidents register. | Internal write-up of serious cases. |
 
 ---
 
-## 7. How each UrbanCart problem is handled
+## 6. RAG and knowledge updates
 
-**“How much is the iPhone 15?”**  
-Intent `product_inquiry` → `products` where name matches → reply with Rs. price and stock. No Slack.
+1. Ops drop or edit a file in Drive `UrbanCart Knowledge / Active` (`return_policy.md`, `shipping_policy.md`, `warranty_policy.md`, `support_guidelines.md`, `product_catalog.md`).
+2. Ingest webhook receives `{ filename, content }`.
+3. Row in `documents` is upserted. Old `chunks` for that `document_id` are deleted. A new chunk is inserted.
+4. The chunk text is embedded (`text-embedding-3-small`, 1536 dimensions) and stored on `chunks.embedding`.
+5. A customer policy question is embedded the same way. `match_chunks` returns the nearest rows with a similarity score.
+6. The reply is the retrieved text plus a source line. The model does not invent a return window.
 
-**“My order UC-10452 hasn’t arrived.”**  
-Intent `order_status` → `orders` by `order_code` → real status, courier, last checkpoint. Unknown codes get “I cannot find that order.” No invented tracking.
-
-**“Can I return headphones after 10 days?”**  
-Intent `policy_returns` → chunk `return_policy` → policy window only; the agent cannot approve a late return. Same pattern for Lahore delivery (`shipping_policy`) and headphones warranty (`warranty_policy`).
-
-**Ready-to-buy lead**  
-Name, phone, product, budget, city, Ready → Airtable Leads + Slack `#sales-leads` when the deal is high value. A later price question does not create another lead or another Slack message.
-
-**“The parcel arrived damaged.”**  
-Intent `complaint` → Airtable Tickets P1 / Damage / Open → Slack `#support-priority` → Zapier creates the Drive folder and the Notion Incidents row. The spoken reply does not approve a refund.
-
-**“Who is the CEO?”**  
-Intent `other` → short menu of what the agent can do. No guessed company facts.
+Changing a file and calling ingest changes the next chat answer. The chat workflow is not edited.
 
 ---
 
-## 8. Guardrails
+## 7. Slack rules (quiet by design)
 
-- Prices are Pakistani Rupees from the catalog, never guessed and never converted to dollars.
-- Order status exists only if the code exists.
-- Policy text is retrieved, not authored by the model.
-- Refunds and late returns are human work.
-- Slack has two rooms and two triggers. That is the whole list for v1.
+| Event | Channel |
+|---|---|
+| Ready lead and high value (budget ≥ Rs. 100,000 or iPhone) | `#sales-leads` |
+| Damage / anger / P1 complaint | `#support-priority` |
+| Order still `in_transit` after `promised_by` | `#ops-alerts` |
+| HTTP / automation failure | `#workflow-errors` |
+
+Normal price and policy questions do not notify anyone.
+
+---
+
+## 8. Memory and work queue
+
+- Phone number upserts `customers`.
+- Each turn writes `conversations` and two `messages` (user + assistant).
+- Each P1 ticket also creates an Airtable **Task** (To do, P1, order code, notes) so operations see work, not only tickets.
 
 ---
 
 ## 9. Demonstration scenarios
 
-These are the paths the live system must show:
-
-1. Product inquiry — iPhone / headphones / kettle price and stock, no Slack.
-2. Unknown order code — “cannot find,” no invented status.
-3. Known order UC-10452 — in-transit sentence from the database.
-4. Return after 10 days — grounded refusal from the return policy.
-5. Delivery to Lahore — shipping policy, no same-day promise.
-6. Headphones warranty — warranty policy.
-7. High-value Ready lead — Airtable Leads + `#sales-leads`.
-8. Damaged parcel — P1 ticket, `#support-priority`, Drive evidence folder, Notion incident, no refund promise.
-9. Voice — the same questions through Vapi, answers from the same webhook.
+1. Product price / stock from `products` — no Slack.  
+2. UC-10452 status from `orders`.  
+3. Unknown order — cannot find, no invented status.  
+4. Return after 10 days — vector hit on `return_policy`, cannot approve.  
+5. Lahore delivery — vector hit on `shipping_policy`.  
+6. Headphones warranty — `warranty_policy`.  
+7. “Approve my refund?” — `support_guidelines`.  
+8. Ready lead — Leads + `#sales-leads`.  
+9. Damaged parcel — ticket + task + `#support-priority` + Drive + Notion.  
+10. Late in-transit order — `#ops-alerts`.  
+11. Broken lookup — `#workflow-errors`, customer still gets a response.  
+12. Ingest 14-day return file — next chat follows 14 days; restore 7 days.  
+13. Same questions on Vapi, WhatsApp webhook and Instagram webhook.
 
 ---
 
@@ -168,11 +147,11 @@ These are the paths the live system must show:
 
 Build this platform.
 
-It matches what Sarah asked for: coverage after hours, answers from UrbanCart data, a lead list sales can work, a P1 queue support can work, quiet Slack, and a paper trail when a parcel is smashed.
-
-- The mouth is Vapi.
-- The brain is n8n.
-- The truth for products, orders, and policy is Supabase / PostgreSQL.
-- The place people work is Airtable.
-- The interrupt wire is Slack.
+- The mouth is Vapi.  
+- The doors are web, WhatsApp, Instagram and voice.  
+- The brain is n8n.  
+- The truth for catalog, orders, people and policy vectors is Supabase / PostgreSQL.  
+- The files ops edit are on Google Drive.  
+- The place people work is Airtable.  
+- The interrupt wire is Slack (four rooms).  
 - The evidence pack is Zapier → Drive + Notion.
